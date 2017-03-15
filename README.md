@@ -16,11 +16,13 @@ Third line change both resolution and bitrate to 1920w x 1080h and 128k respecti
 
 # Tiles CSV file
 Syntax allowed:   
-cord1,cord2,cord3,cord3   
+cord1,cord2,cord3,cord4   
 cord1 LEFT UPPER corner START point WIDTH of the desired tile   
 cord2 LEFT UPPER corner START point HEIGHT of the desired tile   
 cord3 RIGHT BOTTOM corner END point WIDTH of the desired tile   
 cord4 RIGHT BOTTOM corner END point HEIGHT of the desired tile
+
+Coordinates must be expressed as percentage of the video width or height using a scale between 0 and 1. Decimal values must be expressed with the dot and not using the comma (e.g., 0.5). All coordinates refer to the left upper corner of the video to be tiled (e.g., coordinates (0,0) refers to the left upper corner of the video to be tiled while the coordinates (1,1) refer to the right bottom corner of the video to be tiled).
 
 # Output file name
 Specify the output path followed by the desired output prefix without extension
