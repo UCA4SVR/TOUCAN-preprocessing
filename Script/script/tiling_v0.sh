@@ -4,11 +4,11 @@ RED='\033[0;31m'
 INTEGERREGEX='^[0-9]+$'
 STARTENC="Start encoding..."
 ENDENC="Encoding complete!\n"
-TEMPFILE="tempdata.csv"
+ENCTEMPFILE="enctempdata.csv"
 
 #Removing temp data if exists
-if [ -f "$TEMPFILE" ]; then
-rm $TEMPFILE
+if [ -f "$ENCTEMPFILE" ]; then
+rm $ENCTEMPFILE
 fi
 
 echo  "Starting process..."
@@ -61,11 +61,11 @@ else
 				echo -e "\tSrc\tSrc\t${bitrate}k"
 				#Start encoding...
 				echo -e "${STARTENC}"
-				outputfilename=${4}_${bitrate}k.mp4
+				outputfilename=${4}_${bitrate}k
 				ffmpeg -y -i $1 \
 				-b:v ${bitrate}k -bufsize ${bitrate}k \
 				-loglevel 16 -hide_banner \
-				$outputfilename \
+				${outputfilename}.mp4 \
 				< /dev/null \
 				#End of encoding!
 				echo -e "${ENDENC}"
@@ -73,7 +73,7 @@ else
 				eval $(ffprobe -v error \
 				-of flat=s=_ -select_streams v:0 \
 				-show_entries stream=height,width $1) \
-				echo ${outputfilename},${INPUTVIDEOWIDTH},${INPUTVIDEOHEIGHT}>>$TEMPFILE
+				echo ${outputfilename},${INPUTVIDEOWIDTH},${INPUTVIDEOHEIGHT}>>$ENCTEMPFILE
 			else
 				width=$first
 				height=$second
@@ -82,34 +82,74 @@ else
 					echo -e "\t${width}\t${height}\t${bitrate}k"
 					#Start encoding...
                                 	echo -e "${STARTENC}"
-					outputfilename=${4}_${bitrate}k_${width}x_${height}.mp4
+					outputfilename=${4}_${bitrate}k_${width}x_${height}
 					ffmpeg -y -i $1 \
 					-vf scale=${width}:${height} \
 					-b:v ${bitrate}k -bufsize ${bitrate}k \
 					-loglevel 16 -hide_banner \
-					$outputfilename \
+					${outputfilename}.mp4 \
 					< /dev/null \
                                 	#End of encoding!
                                 	echo -e "${ENDENC}"
 					#Pushing video resolution in a file for the next step
-                               		echo ${outputfilename},${width},${height}>>$TEMPFILE
+                               		echo ${outputfilename},${width},${height}>>$ENCTEMPFILE
 				else
 					echo -e "\t${width}\t${height}\tSrc"
 					#Start encoding...
 					echo -e "${STARTENC}"
-					outputfilename=${4}_${width}x_${height}.mp4
+					outputfilename=${4}_${width}x_${height}
                                 	ffmpeg -y -i $1 \
                                         -vf scale=${width}:${height} \
                                         -loglevel 16 -hide_banner \
-                                        $outputfilename \
+                                        ${outputfilename}.mp4 \
 					< /dev/null \
                                 	#End of encoding!
                                 	echo -e "${ENDENC}"
 					#Pushing video resolution in a file for the next step
-                                        echo ${outputfilename},${width},${height}>>$TEMPFILE
+                                        echo ${outputfilename},${width},${height}>>$ENCTEMPFILE
 				fi
                         fi
 		line=$((line+1))
 		done
 	fi
 fi
+##SECTION 1 - VIDEO TILING
+#Checking whether the file path is provided:
+if [ -z "$3" ]; then
+        #File path not provided
+        echo -e "${RED}ERROR: No tiling file supplied"
+        exit 1
+else
+	echo -e "Tiling File <- ${3}!"
+        #File path provided: check if the file exists
+        if [ ! -f $3 ]; then
+                #File doesn't exist
+                echo -e "${RED}File ${3} not found!"
+                exit 1
+        else
+                #File exists. Computing the tiling for each transcoded video
+                cat $ENCTEMPFILE | while IFS=, read  first second third
+                do
+			echo -e "Actual video: ${first}"
+			cat $3 | while IFS=, read  startwidth startheight endwidth endheight
+			do
+				startwpixel=$(echo "$second*$startwidth" |bc)
+				starthpixel=$(echo "$third*$startheight" |bc)
+				endwpixel=$(echo "$second*$endwidth" |bc)
+				endhpixel=$(echo "$third*$endheight" |bc)
+				areawidth=$(echo "$endwpixel-$startwpixel" |bc)
+				areaheight=$(echo "$endhpixel-$starthpixel" |bc)
+				#Start cropping
+				echo -e "\tCropping from (${startwpixel},${starthpixel}) to (${endwpixel},${endhpixel}) with resolution (${areawidth},${areaheight})..."
+				outputfilename="${first}_(w-${areawidth},h-${areaheight})_(sp-${startwpixel},${starthpixel})"
+				ffmpeg -y -i $first.mp4 -filter:v "crop=${areawidth}:${areaheight}:${startwpixel}:${starthpixel}" \
+				-loglevel 16 -hide_banner -c:a copy \
+				$outputfilename.mp4 \
+				< /dev/null \
+				#Cropping complete
+				echo -e "\tCropping complete"
+			done
+		done
+	fi
+fi
+echo "Process completed!"
