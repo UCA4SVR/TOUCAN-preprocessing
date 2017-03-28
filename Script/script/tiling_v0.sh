@@ -20,6 +20,12 @@ if [ -z "$1" ]; then
         #Video file path not provided
         echo -e "${RED}ERROR: No input video file supplied"
         exit 1
+fi
+#Checking whether the input video exists
+if [ ! -f $1 ]; then
+	#File doesn't exist
+        echo -e "${RED}File ${1} not found!"
+        exit 1
 else
 	#Video width and height extraction
 	eval $(ffprobe -v error -of flat=s=_ -select_streams v:0 -show_entries stream=height,width $1)
@@ -47,6 +53,8 @@ DIR=$(dirname "${4}")
 OUT=$(basename "${4}")
 mkdir $DIR/$OUT
 echo -e "MP4Box -dash ${slicing} -segment-name %s_ -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
+#Making the script executable
+chmod 777 $DASHTEMPFILE
 
 ##SECTION 0 - VIDEO TRANSCODING AT MULTIPLE RESOLUTIONS/BITRATES
 #Checking whether the file path is provided:
@@ -59,7 +67,7 @@ else
 	#File path provided: check if the file exists
 	if [ ! -f $2 ]; then
     		#File doesn't exist
-		echo -e "${RED}File ${1} not found!"
+		echo -e "${RED}File ${2} not found!"
 		exit 1
 	else
 		#File exists. Reading it
@@ -187,8 +195,14 @@ fi
 #Launching the script produced in the section 1
 echo "Segmenting each tile and creating the DASH-SRD representation..."
 ./${DASHTEMPFILE}
+exitCode=$?
+if [[ $exitCode != 0 ]]; then
+echo "DASH-SRD representation creation FAILED!"
+else
+#Process completed
 echo "DASH-SRD representation created!"
+echo "Overall process completed!"
+fi
 #Removing temp files
 rm $DASHTEMPFILE
-#Process completed
-echo "Overall process completed!"
+rm $ENCTEMPFILE
