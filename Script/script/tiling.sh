@@ -1,18 +1,6 @@
-#!/bin/bash
-# Copyright 2017 Laboratoire I3S, CNRS, Université côte d'azur
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+#Copyright 2017 Laboratoire I3S, CNRS, Université côte d'azur
 #Author: Savino Dambra
-
+#!/bin/bash
 #Defining some general purpose variables
 RED='\033[0;31m'
 INTEGERREGEX='^[0-9]+$'
@@ -58,7 +46,7 @@ if [ -z "$5" ]; then
         #Value not provided: keeping the default one
         slicing=5000
 else
-        slicing=$5
+        slicing=$5 
 fi
 #Initializing the temp file for SECTION2
 DIR=$(dirname "${4}")
@@ -163,7 +151,8 @@ else
                 echo -e "${RED}File ${3} not found!"
                 exit 1
         else
-                #File exists. Computing the tiling for each transcoded video
+                audio=0
+		#File exists. Computing the tiling for each transcoded video
                 cat $ENCTEMPFILE | while IFS=, read  first second third
                 do
 			echo -e "Current video: ${first}.mp4"
@@ -187,19 +176,25 @@ else
 					echo -e "\tCropping from (${startwpixel},${starthpixel}) to (${endwpixel},${endhpixel}) with resolution (${areawidth},${areaheight})..."
 					outputfilename="${first}_w-${areawidth},h-${areaheight}_sp-${startwpixel},${starthpixel}"
 					ffmpeg -y -i $first.mp4 -filter:v "crop=${areawidth}:${areaheight}:${startwpixel}:${starthpixel}" \
-					-loglevel 16 -hide_banner -c:a copy \
+					-loglevel 16 -hide_banner -an \
 					$outputfilename.mp4 \
 					< /dev/null \
 					#Cropping complete
 					echo -e "\tCropping complete"
 					#Adding this tile to a file for the next section
-					echo -e "${outputfilename}.mp4:desc_as='<SupplementalProperty schemeIdUri="urn:mpeg:dash:srd:2014" value="0,${startwidth},${startheight},${endwidth},${endheight},1,1"/>' \\" >> $DASHTEMPFILE
+					echo -e "${outputfilename}.mp4#video:desc_as='<SupplementalProperty schemeIdUri=\"urn:mpeg:dash:srd:2014\" value=\"0,${startwidth},${startheight},${endwidth},${endheight},1,1\"/>' \\" >> $DASHTEMPFILE
 				else
 					#Skip the line
 					echo  -e "\tValues not between 0 and 1 at the line $((line+1)). Line has been skipped!"
 				fi
 			line=$((line+1))
 			done
+		#extracting audio if needed
+		if [ "$audio" -eq "0" ]; then
+			audio=1
+			ffmpeg -y -i $first.mp4 -vn -loglevel 16 -hide_banner ${first}_audio.mp4
+			echo -e "${first}_audio.mp4#audio" >> $DASHTEMPFILE
+		fi
 		done
 	fi
 fi
