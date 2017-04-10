@@ -46,7 +46,7 @@ if [ ! -d $DIR/$OUT ]; then
 	#Directory doesn't exist. Create it
 	mkdir $DIR/$OUT
 fi
-echo -e "MP4Box -dash ${slicing} -segment-name %s_ -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
+echo -e "MP4Box -dash ${slicing} -segment-name %s_ -rap -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
 #Making the script executable
 chmod 777 $DASHTEMPFILE
 

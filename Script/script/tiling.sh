@@ -52,7 +52,7 @@ fi
 DIR=$(dirname "${4}")
 OUT=$(basename "${4}")
 mkdir $DIR/$OUT
-echo -e "MP4Box -dash ${slicing} -segment-name %s_ -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
+echo -e "MP4Box -dash ${slicing} -segment-name %s_ -rap -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
 #Making the script executable
 chmod 777 $DASHTEMPFILE
 
