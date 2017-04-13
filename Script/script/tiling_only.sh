@@ -1,18 +1,6 @@
+#Copyright 2017 Laboratoire I3S, CNRS, Université côte d'azur
+#Author: Savino Dambra
 #!/bin/bash
-# Copyright 2017 Laboratoire I3S, CNRS, Université côte d'azur
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# Author: Savino Dambra
-
 #Defining some general purpose variables
 RED='\033[0;31m'
 INTEGERREGEX='^[0-9]+$'
@@ -48,7 +36,7 @@ if [ -z "$4" ]; then
         #Value not provided: keeping the default one
         slicing=5000
 else
-        slicing=$4
+        slicing=$4 
 fi
 #Initializing the temp file for SECTION2
 DIR=$(dirname "${3}")
@@ -58,7 +46,7 @@ if [ ! -d $DIR/$OUT ]; then
 	#Directory doesn't exist. Create it
 	mkdir $DIR/$OUT
 fi
-echo -e "MP4Box -dash ${slicing} -segment-name %s_ -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
+echo -e "MP4Box -dash ${slicing} -segment-name %s_ -rap -out ${DIR}/${OUT}/manifest.mpd \\" >> $DASHTEMPFILE
 #Making the script executable
 chmod 777 $DASHTEMPFILE
 
@@ -76,6 +64,7 @@ else
                 echo -e "${RED}File ${2} not found!"
                 exit 1
         else
+		audio=0
                 #File exists. Computing the tiling for each transcoded video
                 cat $ENCTEMPFILE | while IFS=, read  first second third
                 do
@@ -106,7 +95,7 @@ else
 						#Extracting directory and applying the new output name provided as input
 						outputfilename="${DIR}/${OUT}_w-${areawidth},h-${areaheight}_sp-${startwpixel},${starthpixel}"
 						ffmpeg -y -i $first.mp4 -filter:v "crop=${areawidth}:${areaheight}:${startwpixel}:${starthpixel}" \
-						-loglevel 16 -hide_banner -c:a copy \
+						-loglevel 16 -hide_banner -an \
 						$outputfilename.mp4 \
 						< /dev/null \
 						#Cropping complete
@@ -119,6 +108,12 @@ else
 					fi
 				line=$((line+1))
 				done
+				#extracting audio if needed
+                		if [ "$audio" -eq "0" ]; then
+                        		audio=1
+                        		ffmpeg -y -i $first.mp4 -vn -loglevel 16 -hide_banner ${first}_audio.mp4
+                        		echo -e "${first}_audio.mp4#audio" >> $DASHTEMPFILE
+                		fi
 			fi
 		done
 	fi
