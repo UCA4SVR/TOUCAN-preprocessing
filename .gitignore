@@ -1,0 +1,7 @@
+# Forget about video files
+*.mp4*
+*.mpd*
+*.m4s*
+
+# Forget about csv files
+*.csv*
