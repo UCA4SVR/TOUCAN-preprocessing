@@ -134,7 +134,7 @@ public class Worklist {
 		ProcessGetDimensions widthOutput = new ProcessGetDimensions(widthProcess.getInputStream());
 		widthOutput.start();
 		widthProcess.waitFor();
-		videoWidth = widthOutput.returnValue();
+		//videoWidth = widthOutput.returnValue();
 		widthProcess.destroy();
 		
 		//Height

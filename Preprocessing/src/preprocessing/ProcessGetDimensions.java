@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 
 public class ProcessGetDimensions extends Thread {
 	private InputStream inputStream;
-	private String value = null;
+	private String value;
 	
 	ProcessGetDimensions(InputStream inputStream) {
 		this.inputStream = inputStream;
@@ -32,7 +32,7 @@ public class ProcessGetDimensions extends Thread {
 	    	InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 	    	BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 	    	String line = null;
-	    	while ((line = bufferedReader.readLine()) != null) { 
+	    	while ((line = bufferedReader.readLine()) != null) {
 	    		value = line;
 	    	}
 		} catch (IOException ioe) {

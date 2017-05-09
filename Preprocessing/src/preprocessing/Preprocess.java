@@ -24,58 +24,59 @@ import org.xml.sax.SAXException;
 public class Preprocess {
 	public static void main(String[] args) {
 		
-		//TODO: parse the list of arguments
-		String filename = "/home/savio/Desktop/video2.xml";
-
-		Worklist worklist;
-		
-		try {
-			//Building the parser object
-			XmlParser xmlParser = new XmlParser(filename);
+		for(String arg : args) {
+			Worklist worklist;
 			
-			//Starting process
-			System.out.println("Process Started...");
+			try {
+				//Building the parser object
+				XmlParser xmlParser = new XmlParser(arg);
+				
+				//Starting process
+				System.out.println("Process Started with file "+arg+"...");
+				
+				//Parsing the file
+				System.out.print("Parsing the XML file...");
+				worklist = xmlParser.parseXml();
+				System.out.println(" completed!");
 			
-			//Parsing the file
-			System.out.print("Parsing the XML file...");
-			worklist = xmlParser.parseXml();
-			System.out.println(" completed!");
-		
-			//Preliminary actions
-			System.out.print("Preliminary actions...");
-			
-			//Checking if the video file exists
-			worklist.videoExists();
-			
-			//Checking if the output folder exists
-			worklist.outputDirectory();
-			
-			//Acquiring video dimensions
-			worklist.videoDimensions();
-			System.out.println(" completed!");
-			
-			//PHASE 1 - Audio Extraction
-			System.out.print("Start audio extraction:");
-			worklist.extractAudio();
-			System.out.println(" complete!");
-			
-			//PHASE 2 - Transcoding videos
-			System.out.println("Start transcoding:");
-			worklist.transcode();
-			System.out.println("Transcoding complete!");
-			
-			//PHASE 3 - Cropping videos
-			System.out.println("Start cropping:");
-			worklist.tile();
-			System.out.println("Cropping complete!");
-			
-			//PHASE 4 - Segmenting videos
-			System.out.println("Start Segmenting:");
-			worklist.segment();
-			System.out.println("Segmenting complete!");		
-			
-		} catch (ParserConfigurationException | SAXException | InterruptedException | IOException e) {
-			System.err.println(e.getMessage());
+				//Preliminary actions
+				System.out.print("Preliminary actions...");
+				
+				//Checking if the video file exists
+				worklist.videoExists();
+				
+				//Checking if the output folder exists
+				worklist.outputDirectory();
+				
+				//Acquiring video dimensions
+				worklist.videoDimensions();
+				System.out.println(" completed!");
+				
+				//PHASE 1 - Audio Extraction
+				System.out.print("Start audio extraction:");
+				worklist.extractAudio();
+				System.out.println(" complete!");
+				
+				//PHASE 2 - Transcoding videos
+				System.out.println("Start transcoding:");
+				worklist.transcode();
+				System.out.println("Transcoding complete!");
+				
+				//PHASE 3 - Cropping videos
+				System.out.println("Start cropping:");
+				worklist.tile();
+				System.out.println("Cropping complete!");
+				
+				//PHASE 4 - Segmenting videos
+				System.out.println("Start Segmenting:");
+				worklist.segment();
+				System.out.println("Segmenting complete!");
+				
+				System.out.println("Process completed with file "+args+"!");
+				
+			} catch (ParserConfigurationException | SAXException | InterruptedException | IOException e) {
+				System.err.println(e.getMessage());
+			}
 		}
 			
 	}
