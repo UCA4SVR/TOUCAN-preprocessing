@@ -1,4 +1,4 @@
-This java script executes a conversion from a regular 360 video (not yet SRD-described) into a DASH-SRD one.   
+This java script executes a conversion from a regular 360 video (not yet SRD-described) into a DASH-SRD one. It comes along with TOUCAN-VR [1].
 1. It uses FFMPEG tool to firstly transcode the video at the desired resolutions and bitrates for adaptive streaming purposes.    
 2. Then, always using FFMPEG, each video obtained in the previous step, is cropped to obtain tiles     
 3. Finally, using MP4Box, a segmentation of the video is performed and a manifest file is created according to the DASH-SRD standard
@@ -19,7 +19,7 @@ Anne-Marie PINNA-DERY
 
 References:
 
-[1] TOUCAN-Preprocessing https://github.com/UCA4SVR/TOUCAN-VR     
+[1] TOUCAN-VR, https://github.com/UCA4SVR/TOUCAN-VR     
 [2] S. Dambra, G. Samela, L. Sassatelli, R. Pighetti, R. Aparicio-Pardo, A. Pinna-Déry "Film Editing: New Levers to Improve VR Streaming", ACM Multimedia Systems Conference (MMSys), Amsterdam, The Netherlands, June 2018.
 
 # Launching
