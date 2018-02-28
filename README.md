@@ -3,6 +3,25 @@ This java script executes a conversion from a regular 360 video (not yet SRD-des
 2. Then, always using FFMPEG, each video obtained in the previous step, is cropped to obtain tiles     
 3. Finally, using MP4Box, a segmentation of the video is performed and a manifest file is created according to the DASH-SRD standard
 
+Created by:
+
+Universite Nice Sophia Antipolis (Universite Cote d'Azur) and CNRS  
+Laboratoire d'Informatique, Signaux et Systèmes de Sophia Antipolis (I3S)
+
+Contributors:
+
+Savino DAMBRA  
+Giuseppe SAMELA  
+Lucile SASSATELLI  
+Romaric PIGHETTI  
+Ramon APARICIO-PARDO  
+Anne-Marie PINNA-DERY
+
+References:
+
+[1] TOUCAN-Preprocessing https://github.com/UCA4SVR/TOUCAN-VR     
+[2] S. Dambra, G. Samela, L. Sassatelli, R. Pighetti, R. Aparicio-Pardo, A. Pinna-Déry "Film Editing: New Levers to Improve VR Streaming", ACM Multimedia Systems Conference (MMSys), Amsterdam, The Netherlands, June 2018.
+
 # Launching
 The script can be launched from the shell as follow:   
 ```sh
