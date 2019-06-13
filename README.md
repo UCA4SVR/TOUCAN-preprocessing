@@ -2,6 +2,10 @@ This java script executes a conversion from a regular 360 video (not yet SRD-des
 1. It uses FFMPEG tool to firstly transcode the video at the desired resolutions and bitrates for adaptive streaming purposes.    
 2. Then, always using FFMPEG, each video obtained in the previous step, is cropped to obtain tiles     
 3. Finally, using MP4Box, a segmentation of the video is performed and a manifest file is created according to the DASH-SRD standard
+Note: The GPAC version must be 0.5.2-426 (encompassing MP4Box). Corresponding source file gpac_0.5.2-426-gc5ad4e4+dfsg5.orig.tar.xz can be downloaded from 
+https://launchpad.net/ubuntu/+source/gpac/0.5.2-426-gc5ad4e4+dfsg5-3
+Installing only MP4Box is sufficient and can be done as described in
+https://gpac.wp.imt.fr/tag/mp4box/
 
 Created by:
 
